@@ -72,13 +72,13 @@ def war(pile):
     print('Each player places three cards on the pile and then flips to determine a winner.')
     print(player_deck[-3:])
     print(computer_deck[-3:])
-    play_pile = play_pile + player_deck[-3:] + computer_deck[-3:]
+    play_pile = play_pile + player_deck[:3] + computer_deck[:3]
     print(len(play_pile))
     
 
             #if cards played are equal value: place three cards each in the pile then flip again to determine a winner.
             #repeat if equal value again. winner gets whole pile (min: 10 cards)
-            #if either deck is smaller than 
+            #figure out what to do if either player runs out of cards mid war.
 ##    else:
 ##        print("You're tied. It's time for War!")
 ##        print('Flip three cards over and then reveal the fourth to determine the winner.')
