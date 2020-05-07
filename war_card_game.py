@@ -54,14 +54,20 @@ def split(new_deck):
 def compare(player_card, computer_card):
     play_pile.append(player_card)
     play_pile.append(computer_card)
+    print(play_pile)
+    
     if value(player_card) > value(computer_card):
         print('You won the round: opponent picks up.\n')
         for card in play_pile:
             computer_deck.append(card)
+        play_pile = []
+
     elif value(player_card) < value(computer_card):
         print('You lost the round: you pick up.\n')
         for card in play_pile:
             player_deck.append(card)
+        play_pile = []
+
     else:
         print("You are tied. It's time for War!")
         war(play_pile) 
@@ -72,7 +78,7 @@ def war(pile):
     print('Each player places three cards on the pile and then flips to determine a winner.')
     print(player_deck[-3:])
     print(computer_deck[-3:])
-    play_pile = play_pile + player_deck[:3] + computer_deck[:3]
+    play_pile = pile + player_deck[:3] + computer_deck[:3]
     print(len(play_pile))
     
 
