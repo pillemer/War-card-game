@@ -1,13 +1,13 @@
 #! python3
-# Second attempt to create a card game. haven't decided what game yet. maybe war?
+# Second attempt to create a card game.
+# Game of war. Play against the computer.
+# player will be prompted to flip a card by pressing Enter.
 
 # Modules #
-import random  #collections
 
-# (consider switching over to deque from collections module)
+import random 
 
-#def main():
-    #this is where the main code of the game should be placed then called at the start of the program
+# functions #
 
 # create a deck of cards
 def create_deck():
@@ -78,12 +78,14 @@ def war(play_pile, limiter):
         play_pile.append(computer_deck.pop(0))
     return play_pile
 
-            #figure out what to do if either player runs out of cards mid war.
 
+# add played cards to winner's deck
 def pickup(deck, pile):
     for card in pile:
         deck.append(card)
 
+        
+# creates a card face to be printed on screen      
 def card_face(card):
     space = ' '
     face = value(card)
@@ -103,10 +105,12 @@ def card_face(card):
           "└─────────┘"]
     return card_face
 
+# display the card face
 def print_card(card):
     print(*card, sep='\n')
 
-# Game Zone
+    
+# Game Zone #
 
 while True:
     new_deck = shuffle(create_deck())
@@ -117,7 +121,7 @@ while True:
 
         if play.lower() == 'q':
             break
-
+            
         else:
             player_card, computer_card = flip()
             play_pile.append(player_card)
@@ -135,10 +139,13 @@ while True:
             else:
                 if len(player_deck) < 3:
                     limiter = len(player_deck)
+                    
                 elif len(computer_deck) < 3:
                     limiter  = len(computer_deck)
+                    
                 else:
                     limiter = 3
+                    
                 play_pile = war(play_pile, limiter)
                 player_card, computer_card = flip()
                 play_pile.append(player_card)
@@ -156,10 +163,13 @@ while True:
                 else: 
                     if len(player_deck) < 3:
                         limiter = len(player_deck)
+                        
                     elif len(computer_deck) < 3:
                         limiter  = len(computer_deck)
+                        
                     else:
                         limiter = 3
+                        
                     play_pile = war(play_pile, limiter)
 
             if len(player_deck) == 0 or len(computer_deck) == 0:
