@@ -1,19 +1,21 @@
 #! python3
 # Second attempt to create a card game. haven't decided what game yet. maybe war?
 
-# Modules
-import random, sys#, collections
+# Modules #
+import random  #collections
+
 # (consider switching over to deque from collections module)
 
+#def main():
+    #this is where the main code of the game should be placed then called at the start of the program
 
-'''consider switcing cards to dictionary as well with card value as value sets?'''
 # create a deck of cards
 def create_deck():
-    card = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King']
-    suit = {'Hearts': '♥','Clubs': '♣','Diamonds': '♦','Spades': '♠'}
+    cards = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King']
+    shapes = [('Hearts', '♥'), ('Clubs', '♣'), ('Diamonds', '♦'), ('Spades', '♠')]
     root_deck = []
-    for x in enumerate(card, 1):
-        for y in suit.keys():
+    for x in enumerate(cards, 1):
+        for y in shapes:
             root_deck.append([x, y])
     return root_deck
 
@@ -30,102 +32,147 @@ def value(card):
 def name(card):
     return card[0][1]
 
-# retrieve card suit:
+# retrieve card suit name:
 def suit(card):
-    return card[1]
+    return card[1][0]
 
-# flip a card over
-def flip():
-    player_card = player_deck.pop(0)
-    print(len(player_deck))
-    computer_card = computer_deck.pop(0)
-    print('You played a ' + name(player_card) + ' of ' + suit(player_card))
-    print('Your opponenet played a ' + name(computer_card) + ' of ' + suit(computer_card))
-    compare(player_card, computer_card)
-    
+# retrieve card suit symbol:
+def symbol(card):
+    return card[1][1]
+
 # split deck into two equal decks
 def split(new_deck):
     player_deck = new_deck[:(len(new_deck)//2)]
     computer_deck = new_deck[(len(new_deck)//2):]
-    return player_deck, computer_deck
+    play_pile = []
+    return player_deck, computer_deck, play_pile
+
+# flip a card over
+def flip():
+    player_card = player_deck.pop(0)
+    computer_card = computer_deck.pop(0)
+    print('You played a ' + name(player_card) + ' of ' + suit(player_card))
+    print_card(card_face(player_card))
+    print('Your opponent played a ' + name(computer_card) + ' of ' + suit(computer_card))
+    print_card(card_face(computer_card))
+    return player_card, computer_card
+    
+# compare the two played cards to find the winner of the round
+def compare(player_card, computer_card):
+    if value(player_card) > value(computer_card):
+        print('You won the round: you pick up.\n')
+        return 'win'
+    elif value(player_card) < value(computer_card):
+        print('You lost the round: opponent picks up.\n')
+        return 'loss'
+    else:
+        print(f"You are tied. It's time for War!")
+        return 'war'
         
 
-# compare the two flipped cards and determine who picks up (include WAR option)
-def compare(player_card, computer_card):
-    play_pile.append(player_card)
-    play_pile.append(computer_card)
-    print(play_pile)
-    
-    if value(player_card) > value(computer_card):
-        print('You won the round: opponent picks up.\n')
-        for card in play_pile:
-            computer_deck.append(card)
-        play_pile = []
+# war scenario adds three cards from each deck to the playing pile.
+def war(play_pile, limiter):
+    print('Each player places three cards on the pile and then flip the fourth to determine a winner.\n') 
+    for i in range(limiter):
+        play_pile.append(player_deck.pop(0))
+        play_pile.append(computer_deck.pop(0))
+    return play_pile
 
-    elif value(player_card) < value(computer_card):
-        print('You lost the round: you pick up.\n')
-        for card in play_pile:
-            player_deck.append(card)
-        play_pile = []
-
-    else:
-        print("You are tied. It's time for War!")
-        war(play_pile) 
-        flip()
-
-# war scenario
-def war(pile):
-    print('Each player places three cards on the pile and then flips to determine a winner.')
-    print(player_deck[-3:])
-    print(computer_deck[-3:])
-    play_pile = pile + player_deck[:3] + computer_deck[:3]
-    print(len(play_pile))
-    
-
-            #if cards played are equal value: place three cards each in the pile then flip again to determine a winner.
-            #repeat if equal value again. winner gets whole pile (min: 10 cards)
             #figure out what to do if either player runs out of cards mid war.
-##    else:
-##        print("You're tied. It's time for War!")
-##        print('Flip three cards over and then reveal the fourth to determine the winner.')
-##        pile = pile + player_deck[-3:] + computer_deck[-3:]
-##        print(len(pile))
-##        input('press any key to flip the card...')
-##        flip()
-    print(f'you have {len(player_deck)} cards in your deck, you opponent has {len(computer_deck)} cards left.')
-       
 
-# Gameplay:
+def pickup(deck, pile):
+    for card in pile:
+        deck.append(card)
 
-new_deck = shuffle(create_deck())
-player_deck, computer_deck = split(new_deck)
-##player_deck = [[(8, 'Eight'), 'Spades'], [(12, 'Queen'), 'Clubs'], [(9, 'Nine'), 'Diamonds'], [(6, 'Six'), 'Hearts'], [(12, 'Queen'), 'Diamonds']]
-##computer_deck = [[(8, 'Eight'), 'Spades'], [(11, 'Jack'), 'Clubs'], [(9, 'Nine'), 'Diamonds'], [(6, 'Six'), 'Hearts'], [(13, 'King'), 'Diamonds']]
-play_pile = []
+def card_face(card):
+    space = ' '
+    face = value(card)
+    if value(card) > 10 or value(card) == 1:
+       face = name(card)[0] 
+    if value(card) == 10:
+        space = ''
+    sym = symbol(card)
+    card_face = ["┌─────────┐",
+          f"│{face}{space}       │",
+          "│         │",
+          "│         │",
+          f"│    {sym}    │",
+          "│         │",
+          "│         │",
+          f"│       {space}{face}│",
+          "└─────────┘"]
+    return card_face
 
+def print_card(card):
+    print(*card, sep='\n')
 
+# Game Zone
 
+while True:
+    new_deck = shuffle(create_deck())
+    player_deck, computer_deck, play_pile = split(new_deck)
+    while True:
+        print(f'you have {len(player_deck)} cards in your deck, you opponent has {len(computer_deck)} cards left.\n')
+        play = input("Turn a card by pressing enter. ('q' to quit)\n")
 
-
-# TESTING ZONE!
-
-
-quit = False
-
-while not quit:
-    play = input("Turn a card by pressing any key. ('q' to quit)\n")
-    if play.lower() == 'q':
-        print('Thank for playing. See you next time!')
-        quit = True
-        break
-    else:
-        flip()
-    if player_deck == [] or computer_deck == []:
-        if computer_deck == []:
-            print('\nYou have won the game!')
+        if play.lower() == 'q':
             break
+
         else:
-            print('\nYour opponent has won the game!')
-            break
-   
+            player_card, computer_card = flip()
+            play_pile.append(player_card)
+            play_pile.append(computer_card)
+            result = compare(player_card, computer_card)
 
+            if  result == 'loss':
+                pickup(computer_deck, play_pile)
+                play_pile = []
+
+            elif result == 'win':
+                pickup(player_deck, play_pile)
+                play_pile = []
+
+            else:
+                if len(player_deck) < 3:
+                    limiter = len(player_deck)
+                elif len(computer_deck) < 3:
+                    limiter  = len(computer_deck)
+                else:
+                    limiter = 3
+                play_pile = war(play_pile, limiter)
+                player_card, computer_card = flip()
+                play_pile.append(player_card)
+                play_pile.append(computer_card)            
+                result = compare(player_card, computer_card)
+
+                if  result == 'loss':
+                    pickup(computer_deck, play_pile)
+                    play_pile = []
+
+                elif result == 'win':
+                    pickup(player_deck, play_pile)
+                    play_pile = []
+
+                else: 
+                    if len(player_deck) < 3:
+                        limiter = len(player_deck)
+                    elif len(computer_deck) < 3:
+                        limiter  = len(computer_deck)
+                    else:
+                        limiter = 3
+                    play_pile = war(play_pile, limiter)
+
+            if len(player_deck) == 0 or len(computer_deck) == 0:
+
+                if len(computer_deck) == 0:
+                    print('\nYou have won the game!')
+                    break
+                else:
+                    print('\nYour opponent has won the game!')
+                    break
+    ans = input(f'Do you want to play again? (Y/N) ')
+    if ans[0].lower() == 'y':
+        continue   
+    else:
+        break
+print(f'Thank for playing. See you next time!')
